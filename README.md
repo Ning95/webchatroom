@@ -1,11 +1,9 @@
-# webchatroom
-### 网络聊天室性能调优
-
+# 网络聊天室性能调优
 ![](picture/socket.png)
 
-#### TCP三次握手调优
+## TCP三次握手调优
 
-##### 处理TCP 全连接队列溢出
+### 处理TCP 全连接队列溢出
 
 **当服务端并发处理大量请求时，如果 TCP 全连接队列过小，就容易溢出。发生 TCP 全连接队溢出的时候，后续的请求就会被丢弃，这样就会出现服务端请求数量上不去的现象。**
 
@@ -41,7 +39,7 @@ LISTEN      51     50               [::]:8888                     [::]:*
 
 `netstat -s | grep over overflowed`，服务端查看全连接队列是否有溢出；**如果持续不断地有连接因为 TCP 全连接队列溢出被丢弃，就应该调大 backlog 以及 somaxconn 参数**。
 
-##### 处理TCP 半连接队列溢出
+### 处理TCP 半连接队列溢出
 
 **如何查看 TCP 半连接队列长度？**
 
@@ -60,11 +58,9 @@ netstat -natp | grep SYN_RECV | wc -l
 - 开启 tcp_syncookies 功能
 - 减少 SYN+ACK 重传次数
 
-#### TCP 四次挥手的性能提升
+## TCP 四次挥手的性能提升
 
-
-
-#### 服务端使用线程池
+## 服务端使用线程池
 
 之所以使用多线程，主要原因在于**socket.accept()、socket.read()、socket.write()三个主要函数都是同步阻塞的**，当一个连接在处理I/O的时候，系统是阻塞的，如果是单线程的话必然就挂死在那里；但CPU是被释放出来的，开启多线程，就可以让CPU去处理更多的事情。现在的多线程一般都使用线程池，可以让线程的创建和回收成本相对较低。在活动连接数不是特别高（小于单机1000）的情况下，这种模型是比较不错的，可以让每一个连接专注于自己的I/O并且编程模型简单，也不用过多考虑系统的过载、限流等问题。线程池本身就是一个天然的漏斗，可以缓冲一些系统处理不了的连接或请求。
 
@@ -81,11 +77,11 @@ ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE,
                         new ArrayBlockingQueue<Runnable>(BLOCK_QUEUE_SIZE));
 ```
 
-#### 基于多路复用的 NIO
+## 基于多路复用的 NIO
 
-##### NIO模型
+### NIO模型
 
-##### select/poll/epoll
+### select/poll/epoll
 
 
 
